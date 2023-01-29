@@ -1,0 +1,22 @@
+################# RDA ###################
+library("vegan") #Pacote com as principais funções me ecologia vegetal 
+library("ggplot2") #Pacote para gráficos 
+library("ggrepel") #Pacote que evita sobreposições no gráfico 
+pacman::p_load(vegan, ggplot2, dplyr, ggrepel)
+pacman::p_load(data.table)
+library("dplyr")
+pacman::p_load(data.table)
+
+
+
+med<-read.csv("C:/Users/Julia/Documents/analises_sisyrinchium/RDA/medvag.csv" , sep=",", dec=",")
+bioclim<-read.csv("C:/Users/Julia/Documents/analises_sisyrinchium/RDA/coordvag22.csv" , sep=",", dec=",")
+
+bioclim <- bioclim[,-1]
+
+result<- rda(med ~ scale (bioclim))
+result
+vif.cca(result)
+summary(result)
+plot(result)
+anova(result)
