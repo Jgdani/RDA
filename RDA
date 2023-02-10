@@ -2,21 +2,115 @@
 library("vegan") #Pacote com as principais funções me ecologia vegetal 
 library("ggplot2") #Pacote para gráficos 
 library("ggrepel") #Pacote que evita sobreposições no gráfico 
-pacman::p_load(vegan, ggplot2, dplyr, ggrepel)
-pacman::p_load(data.table)
 library("dplyr")
-pacman::p_load(data.table)
+library("RDA")
+
+medd<-read.csv("C:/Users/Julia/Documents/analises_sisyrinchium/RDA/medvagf.csv" , sep=",", dec=",")
+bioclimm<-read.csv("C:/Users/Julia/Documents/analises_sisyrinchium/RDA/Coordv.csv" , sep=",", dec=",")
 
 
+corre = cor(med$n.flores.ripid, med, method = "spearman")
+cor(med)
+cor(bioclim)
+corre2 = cor(bioclim$prec, bioclim, method = "spearman")
+corre2
 
-med<-read.csv("C:/Users/Julia/Documents/analises_sisyrinchium/RDA/medvag.csv" , sep=",", dec=",")
-bioclim<-read.csv("C:/Users/Julia/Documents/analises_sisyrinchium/RDA/coordvag22.csv" , sep=",", dec=",")
+##### exclui as duas primeiras colunas (tentei com a planilha sem essas colunas e também não rolou)
+bioclim <- bioclimm[,-1]
+med <- medd [,-1]
 
-bioclim <- bioclim[,-1]
+#transformei os dois em data frame
+bioclim <- as.data.frame(bioclimm)
+med<- as.data.frame(medd) 
+
+
 
 result<- rda(med ~ scale (bioclim))
+result<- rda(med ~ ., bioclim, scale=T)
 result
+plot(result)
 vif.cca(result)
 summary(result)
 plot(result)
 anova(result)
+plot(result)
+
+
+
+
+#################### gráfico
+
+levels(medd$Especie) <- c("restioides","alatum","marchio","marchioides","weirii","vaginatum")
+Specie <- medd$Especie
+bg <- c('#1C4042','#0D5D23','#CD0000','#10A2A6','#A60040','#DFA327') # 6 nice colors for our species
+#Desta vez, definiremos os gráficos e adicionaremos cada componente separadamente:
+  
+  # axes 1 & 2
+plot(result, type="n", scaling=3)        
+points(result, display="sites", pch=21, cex=2, col= c('#1C4042','#0D5D23','#CD0000','#10A2A6','#A60040','#DFA327'), scaling=3, bg=bg[Specie]) # the wolves
+text(result, scaling=1, display="bp", col="#0868ac", cex=1)                           # the predictors
+legend("bottomright", legend=levels(Specie), bty="n", col="gray32", pch=21, cex=1, bg = "bg")
+
+
+# axes 1 & 3
+plot(result, type="n", scaling=3, choices=c(1,3))
+points(result, display="species", pch=20, cex=0.7, col="gray32", scaling=3, choices=c(1,3))
+points(result, display="sites", pch=21, cex=1.3, col= c('#1C4042','#0D5D23','#CD0000','#10A2A6','#A60040','#DFA327'), scaling=3, bg=bg[Specie], choices=c(1,3))
+text(result, scaling=3, display="bp", col="#0868ac", cex=1, choices=c(1,3))
+legend("topleft", legend=levels(Specie), bty="n", col="gray32", pch=21, cex=1, pt.bg=bg)
+
+
+
+
+#################### restioides ####################
+
+
+med<-read.csv("C:/Users/Julia/Documents/analises_sisyrinchium/RDA/medrestioides.csv" , sep=",", dec=",")
+bioclimm<-read.csv("C:/Users/Julia/Documents/analises_sisyrinchium/RDA/coordrestioides.csv" , sep=",", dec=",")
+
+
+corre = cor(med$n.flores.ripid, med, method = "spearman")
+corre
+
+corre2 = cor(bioclim$prec, bioclim, method = "spearman")
+corre2
+
+##### exclui as duas primeiras colunas (tentei com a planilha sem essas colunas e também não rolou)
+bioclim <- bioclimm[,-1]
+med <- medd [,-1]
+
+#transformei os dois em data frame
+bioclim <- as.data.frame(bioclimm)
+med<- as.data.frame(medd) 
+
+
+
+result<- rda(med ~ scale (bioclim))
+result<- rda(med ~ ., bioclim, scale=T)
+result
+plot(result)
+vif.cca(result)
+summary(result)
+plot(result)
+anova(result)
+plot(result)
+
+
+
+
+#################### gráfico
+
+# axes 1 & 2
+plot(result, type="n", scaling=3)        
+points(result, display="sites", pch=21, cex=2, col= "gray32", scaling=3) # the wolves
+text(result, scaling=1, display="bp", col="#0868ac", cex=1)                           # the predictors
+
+
+
+# axes 1 & 3
+plot(result, type="n", scaling=3, choices=c(1,3))
+points(result, display="species", pch=20, cex=0.7, col="gray32", scaling=3, choices=c(1,3))
+points(result, display="sites", pch=21, cex=1.3, col= "gray32", scaling=3, choices=c(1,3))
+text(result, scaling=3, display="bp", col="#0868ac", cex=1, choices=c(1,3))
+
+
